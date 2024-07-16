@@ -240,7 +240,7 @@ psql -U postgres
 ```
 
 ```bash
-create database chatwoot;
+create database evolution;
 ```
 
 Redis
