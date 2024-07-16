@@ -307,85 +307,186 @@ Colocamos o nome da stack (recomendo deixar evolution)
 
 ```bash
 version: "3.7"
+
 services:
-  evolution_app:
-    image: atendai/evolution-api:v1.7.1 # Altere para versão desejada
-    command: ["node", "./dist/src/main.js"]
+  evolution_api_v2:
     volumes:
-    - evolution_instances:/evolution/instances
-    - evolution_store:/evolution/store
-    - evolution_views:/evolution/views
+      - evolution_instances:/evolution/instances
     networks:
       - ecosystem_network
     environment:
-    - SERVER_URL=https://api.seudominio.com.br 
-    - DOCKER_ENV=true
-    - LOG_LEVEL=ERROR
-    - DEL_INSTANCE=false
-    - CONFIG_SESSION_PHONE_CLIENT=NOME_SESSAO_APP
-    - CONFIG_SESSION_PHONE_NAME=chrome
-    - STORE_MESSAGES=true
-    - STORE_MESSAGE_UP=true
-    - STORE_CONTACTS=true
-    - STORE_CHATS=true
-    - CLEAN_STORE_CLEANING_INTERVAL=7200 # seconds === 2h
-    - CLEAN_STORE_MESSAGES=true
-    - CLEAN_STORE_MESSAGE_UP=true
-    - CLEAN_STORE_CONTACTS=true
-    - CLEAN_STORE_CHATS=true
-    - AUTHENTICATION_TYPE=apikey
-    - AUTHENTICATION_API_KEY=f4e9c72e34fd4485aa9e49295f9cbd8d
-    - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
-    - QRCODE_LIMIT=19021
-    - QRCODE_COLOR=#81c244
-    - WEBHOOK_GLOBAL_ENABLED=false
-    - WEBHOOK_GLOBAL_URL=https://URL
-    - WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS=false
-    - WEBHOOK_EVENTS_APPLICATION_STARTUP=false
-    - WEBHOOK_EVENTS_QRCODE_UPDATED=true
-    - WEBHOOK_EVENTS_MESSAGES_SET=false
-    - WEBHOOK_EVENTS_MESSAGES_UPSERT=true
-    - WEBHOOK_EVENTS_MESSAGES_UPDATE=true
-    - WEBHOOK_EVENTS_CONTACTS_SET=true
-    - WEBHOOK_EVENTS_CONTACTS_UPSERT=true
-    - WEBHOOK_EVENTS_CONTACTS_UPDATE=true
-    - WEBHOOK_EVENTS_PRESENCE_UPDATE=true
-    - WEBHOOK_EVENTS_CHATS_SET=true
-    - WEBHOOK_EVENTS_CHATS_UPSERT=true
-    - WEBHOOK_EVENTS_CHATS_UPDATE=true
-    - WEBHOOK_EVENTS_CHATS_DELETE=true
-    - WEBHOOK_EVENTS_GROUPS_UPSERT=true
-    - WEBHOOK_EVENTS_GROUPS_UPDATE=true
-    - WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE=true
-    - WEBHOOK_EVENTS_CONNECTION_UPDATE=true
-    - REDIS_ENABLED=false
-    - REDIS_URI=redis://redis:6379
+      # Configurar el servidor de evolution
+      - SERVER_TYPE=http
+      - SERVER_PORT=8080
+      - SERVER_URL=https://evolution.seudominio.com.br
+      # Configurar CORS
+      - CORS_ORIGIN=*
+      - CORS_METHODS=POST,GET,PUT,DELETE
+      - CORS_CREDENTIALS=true
+      # Configurar autenticación
+      - AUTHENTICATION_API_KEY=429683C4C977415CAAFCCE10F7D57E11
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      # Determina los logs que serán mostrados
+      - LOG_LEVEL=ERROR,WARN
+      - LOG_COLOR=true
+      - LOG_BAILEYS=error
+      # Información que se mostrará en los smartphones
+      - CONFIG_SESSION_PHONE_CLIENT=Evolution API V2
+      - CONFIG_SESSION_PHONE_NAME=Chrome
+      - CONFIG_SESSION_PHONE_VERSION=2.2413.51
+      # Configurar el QR code
+      - QRCODE_LIMIT=30
+      - QRCODE_COLOR=#000000
+      # Determina si se elimarán las instancias no conectadas
+      - DEL_INSTANCE=1902
+      - DEL_TEMP_INSTANCES=false
+      # Configurar provider (alternativa a base de datos)
+      - PROVIDER_ENABLED=false
+      - PROVIDER_HOST=127.0.0.1
+      - PROVIDER_PORT=5656
+      - PROVIDER_PREFIX=evolution_api
+      # Configurar base de datos (Postgres)
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://postgres:r45796yv3bhub9w4f3ga3ikxmxos648r@postgres:5432/evolution?schema=public
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_api
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      # Configurar RabbitMQ
+      - RABBITMQ_ENABLED=false
+      - RABBITMQ_URI=amqp://usuario:PASSWORD@rabbitmq:5672/default
+      - RABBITMQ_EXCHANGE_NAME=evolution_api
+      - RABBITMQ_GLOBAL_ENABLED=true
+      - RABBITMQ_EVENTS_APPLICATION_STARTUP=true
+      - RABBITMQ_EVENTS_INSTANCE_CREATE=true
+      - RABBITMQ_EVENTS_INSTANCE_DELETE=true
+      - RABBITMQ_EVENTS_QRCODE_UPDATED=true
+      - RABBITMQ_EVENTS_MESSAGES_SET=true
+      - RABBITMQ_EVENTS_MESSAGES_UPSERT=true
+      - RABBITMQ_EVENTS_MESSAGES_EDITED=true
+      - RABBITMQ_EVENTS_MESSAGES_UPDATE=true
+      - RABBITMQ_EVENTS_MESSAGES_DELETE=true
+      - RABBITMQ_EVENTS_SEND_MESSAGE=true
+      - RABBITMQ_EVENTS_CONTACTS_SET=true
+      - RABBITMQ_EVENTS_CONTACTS_UPSERT=true
+      - RABBITMQ_EVENTS_CONTACTS_UPDATE=true
+      - RABBITMQ_EVENTS_PRESENCE_UPDATE=true
+      - RABBITMQ_EVENTS_CHATS_SET=true
+      - RABBITMQ_EVENTS_CHATS_UPSERT=true
+      - RABBITMQ_EVENTS_CHATS_UPDATE=true
+      - RABBITMQ_EVENTS_CHATS_DELETE=true
+      - RABBITMQ_EVENTS_GROUPS_UPSERT=true
+      - RABBITMQ_EVENTS_GROUP_UPDATE=true
+      - RABBITMQ_EVENTS_GROUP_PARTICIPANTS_UPDATE=true
+      - RABBITMQ_EVENTS_CONNECTION_UPDATE=true
+      - RABBITMQ_EVENTS_CALL=true
+      - RABBITMQ_EVENTS_TYPEBOT_START=true
+      - RABBITMQ_EVENTS_TYPEBOT_CHANGE_STATUS=true
+      # Configurar SQS
+      - SQS_ENABLED=false
+      - SQS_ACCESS_KEY_ID=
+      - SQS_SECRET_ACCESS_KEY=
+      - SQS_ACCOUNT_ID=
+      - SQS_REGION=
+      # Configurar websocket:
+      - WEBSOCKET_ENABLED=false
+      - WEBSOCKET_GLOBAL_EVENTS=false
+      # Configurar API oficial de WhatsApp
+      - WA_BUSINESS_TOKEN_WEBHOOK=evolution
+      - WA_BUSINESS_URL=https://graph.facebook.com
+      - WA_BUSINESS_VERSION=v18.0
+      - WA_BUSINESS_LANGUAGE=es
+      # Configurar el webhook global
+      - WEBHOOK_GLOBAL_ENABLED=false
+      - WEBHOOK_GLOBAL_URL=https://URL
+      - WEBHOOK_GLOBAL_WEBHOOK_BY_EVENTS=false
+      - WEBHOOK_EVENTS_APPLICATION_STARTUP=false
+      - WEBHOOK_EVENTS_QRCODE_UPDATED=true
+      - WEBHOOK_EVENTS_MESSAGES_SET=true
+      - WEBHOOK_EVENTS_MESSAGES_UPSERT=true
+      - WEBHOOK_EVENTS_MESSAGES_EDITED=true
+      - WEBHOOK_EVENTS_MESSAGES_UPDATE=true
+      - WEBHOOK_EVENTS_MESSAGES_DELETE=true
+      - WEBHOOK_EVENTS_SEND_MESSAGE=true
+      - WEBHOOK_EVENTS_CONTACTS_SET=true
+      - WEBHOOK_EVENTS_CONTACTS_UPSERT=true
+      - WEBHOOK_EVENTS_CONTACTS_UPDATE=true
+      - WEBHOOK_EVENTS_PRESENCE_UPDATE=true
+      - WEBHOOK_EVENTS_CHATS_SET=true
+      - WEBHOOK_EVENTS_CHATS_UPSERT=true
+      - WEBHOOK_EVENTS_CHATS_UPDATE=true
+      - WEBHOOK_EVENTS_CHATS_DELETE=true
+      - WEBHOOK_EVENTS_GROUPS_UPSERT=true
+      - WEBHOOK_EVENTS_GROUPS_UPDATE=true
+      - WEBHOOK_EVENTS_GROUP_PARTICIPANTS_UPDATE=true
+      - WEBHOOK_EVENTS_CONNECTION_UPDATE=true
+      - WEBHOOK_EVENTS_LABELS_EDIT=true
+      - WEBHOOK_EVENTS_LABELS_ASSOCIATION=true
+      - WEBHOOK_EVENTS_CALL=true
+      - WEBHOOK_EVENTS_TYPEBOT_START=false
+      - WEBHOOK_EVENTS_TYPEBOT_CHANGE_STATUS=false
+      - WEBHOOK_EVENTS_ERRORS=false
+      - WEBHOOK_EVENTS_ERRORS_WEBHOOK=https://evolution.seudominio.com.br/webhook
+      # Configurar Typebot
+      - TYPEBOT_ENABLED=true
+      - TYPEBOT_SEND_MEDIA_BASE64=true
+      - TYPEBOT_API_VERSION=latest
+      # Configurar Chatwoot
+      - CHATWOOT_ENABLED=true
+      - CHATWOOT_MESSAGE_READ=true
+      - CHATWOOT_MESSAGE_DELETE=true
+      - CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://postgres:1r45796yv3bhub9w4f3ga3ikxmxos648r@postgres:5432/chatwoot?sslmode=disable
+      - CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE=true
+      - LANGUAGE=pt_BR
+      # Redis
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://redis:6379/6
+      - CACHE_REDIS_PREFIX_KEY=evolution_api
+      - CACHE_REDIS_SAVE_INSTANCES=false
+      - CACHE_LOCAL_ENABLED=false
+	  # S3 Storage
+	  - S3_ENABLED=false
+      - S3_ACCESS_KEY=
+      - S3_SECRET_KEY=
+      - S3_BUCKET=evolution
+      - S3_PORT=443
+      - S3_ENDPOINT=files.site.com
+      - S3_USE_SSL=true
+      - AUTHENTICATION_API_KEY=429683C4C977415CAAFCCE10F7D57E11
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - LANGUAGE=en
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
-        - node.role == manager
+          - node.role == manager
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
       labels:
-      - traefik.enable=1
-      - traefik.http.routers.evolution_app.rule=Host(`api.seudominio.com.br`)
-      - traefik.http.routers.evolution_app.entrypoints=websecure
-      - traefik.http.routers.evolution_app.priority=1
-      - traefik.http.routers.evolution_app.tls.certresolver=letsencryptresolver
-      - traefik.http.routers.evolution_app.service=evolution_app
-      - traefik.http.services.evolution_app.loadbalancer.server.port=8080
-      - traefik.http.services.evolution_app.loadbalancer.passHostHeader=1
+        traefik.enable: "true"
+        traefik.http.routers.evolution_api_v2.rule: "Host(`evolution.seudominio.com.br`)"
+        traefik.http.routers.evolution_api_v2.entrypoints: "websecure"
+        traefik.http.routers.evolution_api_v2.tls.certresolver: "letsencryptresolver"
+        traefik.http.routers.evolution_api_v2.priority: "1"
+        traefik.http.routers.evolution_api_v2.service: "evolution_api_v2"
+        traefik.http.services.evolution_api_v2.loadbalancer.server.port: "8080"
+        traefik.http.services.evolution_api_v2.loadbalancer.passHostHeader: "true"
+
 volumes:
   evolution_instances:
     external: true
-  evolution_store:
-    external: true
-  evolution_views:
-    external: true
+    name: evolution_v2_data
 
 networks:
   ecosystem_network:
     external: true
+    name: ecosystem_network
 ```
 
 ### Obs: Lembre-se de alterar campos com as informações necessárias:
